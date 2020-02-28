@@ -1,0 +1,35 @@
+version: '3.1'
+
+networks:
+  mynetwork:
+
+services:
+  bookstack:
+    image: solidnerd/bookstack
+    networks:
+      - mynetwork
+    environment:
+      - DB_HOST=mysql:3306
+      - DB_USER=bookstack
+      - DB_PASSWORD=bookstackpass
+      - DB_DATABASE=bookstackapp
+    ports:
+      - 8080:80
+    restart: unless-stopped
+    volumes:
+      - ./bookstack/uploads:/var/www/bookstack/public/uploads
+      - ./bookstack/storage:/var/www/bookstack/storage/uploads
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:5.7.21
+    networks:
+      - mynetwork
+    environment:
+      MYSQL_DATABASE: bookstackapp
+      MYSQL_USER: bookstack
+      MYSQL_PASSWORD: bookstackpass
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - 3306:3306
